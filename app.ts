@@ -1,10 +1,7 @@
 import puppeteer, { EventEmitter } from "puppeteer";
-import domains from "./data";
-import axios from "axios";
-import fs from "fs";
 const express = require("express");
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 let count: { [props: string]: any } = {};
 let watch_time: { [props: string]: any } = {};
 
@@ -83,7 +80,7 @@ function get_views(url: string, name: string, duration: number, min?: number) {
     // })();
     (async function () {
       const page = await browser.newPage();
-      await page.goto(url);
+      await page.goto(url, { timeout: 0 });
       const play = await page.waitForSelector(".ytp-play-button", {
         timeout: 0,
       });
