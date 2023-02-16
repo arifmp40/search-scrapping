@@ -60,7 +60,7 @@ async function get_views(props: {
           watch_time[name] / 60000
         ).toFixed(2)} min // Runner time ${runner_time} sec ---> ${name}`
       );
-      console.log(benchmark.end_point());
+
       await browser.close();
 
       get_views(props);
