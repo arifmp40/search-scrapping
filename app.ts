@@ -2,9 +2,10 @@ import puppeteer, { EventEmitter } from "puppeteer";
 import express from "express";
 import { benchmark } from "./benchmark";
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 6969;
 let count: { [props: string]: any } = {};
 let watch_time: { [props: string]: any } = {};
+let initiate_views: { [props: string]: any } = {};
 
 process.setMaxListeners(Infinity);
 
@@ -47,6 +48,19 @@ async function get_views(props: {
     });
 
     await video?.click();
+
+    const live_views_el = await page.waitForSelector(
+      `.ytd-watch-metadata#info span`,
+      {
+        timeout: 0,
+      }
+    );
+
+    const live_views = await live_views_el?.evaluate(
+      (e) => +e.textContent!.substring(0, e.textContent!.length - 5)
+    );
+    !initiate_views[name] && (initiate_views[name] = live_views);
+
     const time = Number((random(min || 10, duration) * 1000).toFixed(2));
     const runner_time = benchmark.end_point().toFixed(2);
 
@@ -54,11 +68,14 @@ async function get_views(props: {
       count[name]++;
       watch_time[name] += time;
       console.log(
-        `Viewed - ${count[name]} // Current Watch time - ${(
-          time / 1000
-        ).toFixed(2)} sec // Total Watch time - ${(
-          watch_time[name] / 60000
-        ).toFixed(2)} min // Runner time ${runner_time} sec ---> ${name}`
+        `Viewed - ${count[name]} // Current time - ${(time / 1000).toFixed(
+          2
+        )} sec // Total time - ${(watch_time[name] / 60000).toFixed(
+          2
+        )} min // Live - ${live_views} // Runner time ${runner_time} sec ---> ${name} Accuracy(${(
+          ((live_views! - initiate_views[name]) / count[name]) *
+          100
+        ).toFixed(2)})%`
       );
 
       await browser.close();
@@ -76,6 +93,20 @@ get_views({
   duration: 24,
   min: 15,
   channel: "https://www.youtube.com/@blog-starmusic5934",
+});
+get_views({
+  url: "https://www.youtube.com/watch?v=RhOWleIHKt4",
+  name: "After Dark",
+  duration: 40,
+  min: 22,
+  channel: "https://www.youtube.com/@sirvenux",
+});
+get_views({
+  url: "https://www.youtube.com/watch?v=kCsi2QieQAo",
+  name: "Highlight",
+  duration: 130,
+  min: 70,
+  channel: "https://www.youtube.com/@sirvenux",
 });
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
