@@ -1,18 +1,4 @@
-import puppeteer, { EventEmitter } from "puppeteer";
-import express from "express";
-const app = express();
-const port = process.env.PORT || 3000;
-let count: { [props: string]: any } = {};
-let watch_time: { [props: string]: any } = {};
-
-process.setMaxListeners(Infinity);
-
-function random(min: number, max: number) {
-  return Math.floor(Math.random() * (max - min + 1) + min) + Math.random();
-}
-
-function get_views(url: string, name: string, duration: number, min?: number) {
-  !count[name] && (count[name] = 0);
+!count[name] && (count[name] = 0);
   !watch_time[name] && (watch_time[name] = 0);
   puppeteer.launch({ headless: true }).then((browser) => {
     // (async function () {
@@ -83,20 +69,9 @@ function get_views(url: string, name: string, duration: number, min?: number) {
     (async function () {
       const page = await browser.newPage();
       await page.goto(url, { timeout: 0 });
-      await page.evaluate(() => {
-        localStorage.setItem(
-          "yt-player-quality",
-          JSON.stringify({
-            data: { quality: 144, previousQuality: 144 },
-            expiration: 1707632422563,
-            creation: 1676528422563,
-          })
-        );
-      });
       const play = await page.waitForSelector(".ytp-play-button", {
         timeout: 0,
       });
-
       await play?.click();
       const time = Number((random(min || 10, duration) * 1000).toFixed(2));
 
@@ -115,8 +90,24 @@ function get_views(url: string, name: string, duration: number, min?: number) {
       }, time);
     })();
   });
-}
 
-get_views("https://www.youtube.com/watch?v=8YTRTUfNWxQ", "ABDULLAH", 24, 15);
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+
+  // get_views("https://www.youtube.com/watch?v=qUya-EmYxSc", "GLOO WALL", 18);
+  // get_views("https://www.youtube.com/watch?v=8YTRTUfNWxQ", "ABDULLLAH", 12);
+
+// get_views("https://www.youtube.com/watch?v=8peDaoF3qgw", "ELON MUSK", 60, 40);
+// get_views("https://www.youtube.com/watch?v=7D1XsoQJLXo", "ADHI RAAT", 28, 16);
+// get_views("https://www.youtube.com/watch?v=RhOWleIHKt4", "AFTER DARK", 40, 26);
+// get_views("https://www.youtube.com/watch?v=RhOWleIHKt4", "AFTER DARK", 40, 26);
+// get_views("https://www.youtube.com/watch?v=RhOWleIHKt4", "AFTER DARK", 40, 26);
+
+get_views(
+  "https://www.youtube.com/watch?v=8peDaoF3qgw&vq=hd1440",
+  "ELON MUSK",
+  60,
+  40
+);
+get_views("https://www.youtube.com/watch?v=7D1XsoQJLXo", "ADHI RAAT", 28, 16);
+get_views("https://www.youtube.com/watch?v=RhOWleIHKt4", "AFTER DARK", 42, 26);
+// get_views("https://www.youtube.com/watch?v=RhOWleIHKt4", "AFTER DARK", 38, 26);
