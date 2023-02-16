@@ -75,7 +75,7 @@ async function get_views(props: {
         )} min // Live - ${live_views} // Runner time ${runner_time} sec ---> ${name} Accuracy(${(
           ((live_views! - initiate_views[name]) / count[name]) *
           100
-        ).toFixed(2)})%`
+        ).toFixed(2)})% \n`
       );
 
       await browser.close();
